@@ -91,27 +91,44 @@ open http://localhost:8080/swagger-ui.html
 ```
 
 ## Project Structure
+
+```
 src/main/java/com/urlshortener/
-├── UrlShortenerApplication.java   # Entry point
+│
+├── UrlShortenerApplication.java
+│
 ├── util/
-│   ├── SnowflakeIdGenerator.java  # Twitter Snowflake algorithm
-│   └── Base62Encoder.java         # ID → short code encoding
+│   ├── SnowflakeIdGenerator.java
+│   └── Base62Encoder.java
+│
 ├── entity/
-│   └── UrlMapping.java            # Database table model
+│   └── UrlMapping.java
+│
 ├── repository/
-│   └── UrlMappingRepository.java  # Database queries
+│   └── UrlMappingRepository.java
+│
 ├── dto/
-│   ├── ShortenRequest.java        # API request shape
-│   └── ShortenResponse.java       # API response shape
+│   ├── ShortenRequest.java
+│   ├── ShortenResponse.java
+│   └── ErrorResponse.java
+│
 ├── config/
-│   └── RedisConfig.java           # Redis cache configuration
+│   └── RedisConfig.java
+│
 ├── service/
-│   └── UrlService.java            # Business logic
+│   └── UrlService.java
+│
 ├── controller/
-│   └── UrlController.java         # HTTP endpoints
+│   └── UrlController.java
+│
 └── exception/
-├── GlobalExceptionHandler.java # Centralised error handling
-└── UrlNotFoundException.java   # Custom exceptions
+    ├── UrlNotFoundException.java
+    ├── UrlExpiredException.java
+    ├── UrlInactiveException.java
+    ├── AliasAlreadyExistsException.java
+    ├── SnowflakeException.java
+    └── GlobalExceptionHandler.java
+```
 
 ## What I Learned Building This
 
@@ -121,7 +138,6 @@ src/main/java/com/urlshortener/
 - Docker multi-stage builds for minimal image size
 - JPA entity design for PostgreSQL at scale
 - Global exception handling with RFC 9457 Problem Details
-
 ## Author
 Built by Sri Hari — SDE learner building production-grade
 systems from scratch.
