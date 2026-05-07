@@ -139,5 +139,5 @@ src/main/java/com/urlshortener/
 - JPA entity design for PostgreSQL at scale
 - Global exception handling with RFC 9457 Problem Details
 ## Author
-Built by Sri Hari — SDE learner building production-grade
+Built by Hari Dev Prasad — SDE learner building production-grade
 systems from scratch.
