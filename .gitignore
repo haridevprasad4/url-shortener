@@ -1,4 +1,4 @@
-# ── Maven ────────────────────────────────────────────────────
+#Maven
 target/
 *.class
 *.jar
@@ -6,19 +6,19 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
-# ── Maven Wrapper ────────────────────────────────────────────
+#Maven Wrapper
 .mvn/wrapper/maven-wrapper.jar
 
-# ── Spring Boot ──────────────────────────────────────────────
+#Spring Boot
 HELP.md
 
-# ── IDE — IntelliJ ───────────────────────────────────────────
+#IDE - IntelliJ
 .idea/
 *.iws
 *.iml
 *.ipr
 
-# ── IDE — Eclipse / STS ──────────────────────────────────────
+#IDE - Eclipse / STS
 .apt_generated
 .classpath
 .factorypath
@@ -27,7 +27,7 @@ HELP.md
 .springBeans
 .sts4-cache
 
-# ── IDE — NetBeans ────────────────────────────────────────────
+#IDE NetBeans
 /nbproject/private/
 /nbbuild/
 /dist/
@@ -37,26 +37,26 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
-# ── IDE — VS Code ─────────────────────────────────────────────
+#IDE - VS Code
 .vscode/
 
-# ── OS ────────────────────────────────────────────────────────
+#OS
 .DS_Store
 Thumbs.db
 *:Zone.Identifier
 
-# ── Environment and Secrets ───────────────────────────────────
+#Environment and Secrets
 .env
 *.env
 *.pem
 *.csv
 
-# ── Docker ────────────────────────────────────────────────────
+#Docker
 docker-compose.override.yml
 
-# ── Logs ──────────────────────────────────────────────────────
+#Logs
 *.log
 logs/
 
-# ── AWS ───────────────────────────────────────────────────────
+#AWS
 .aws/
