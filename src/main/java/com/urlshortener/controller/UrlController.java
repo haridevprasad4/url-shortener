@@ -59,8 +59,7 @@ public class UrlController {
         ShortenResponse response =
             urlService.shortenUrl(request);
 
-        // 201 Created
-        // Location header points to the new resource
+
         return ResponseEntity
             .created(URI.create(
                 "/api/v1/urls/" + response.shortCode()))
