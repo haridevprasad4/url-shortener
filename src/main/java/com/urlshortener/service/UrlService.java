@@ -30,15 +30,12 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class UrlService {
 
-    // ── Dependencies ──────────────────────────────────────────────
-    // Spring injects these via constructor
-    // @RequiredArgsConstructor generates the constructor
-    // for all final fields automatically
+
     private final UrlMappingRepository repository;
     private final SnowflakeIdGenerator snowflakeIdGenerator;
     private final Base62Encoder base62Encoder;
 
-    // ── Config from application.yml ───────────────────────────────
+
     @Value("${app.base-url}")
     private String baseUrl;
 
@@ -46,22 +43,18 @@ public class UrlService {
     private int defaultExpiryDays;
 
 
-    // ════════════════════════════════════════════════════════════════
-    //  CREATE — Shorten a URL
-    // ════════════════════════════════════════════════════════════════
 
     @Transactional
     public ShortenResponse shortenUrl(ShortenRequest request) {
         log.info("Shortening URL: {} alias={}",
             request.originalUrl(), request.customAlias());
 
-        // ── Step 1: Handle custom alias or generate short code ────
+
         String shortCode;
         if (request.customAlias() != null
                 && !request.customAlias().isBlank()) {
 
-            // User wants a vanity alias
-            // Check if it is already taken
+
             if (repository.existsByShortCode(
                     request.customAlias())) {
                 throw new AliasAlreadyExistsException(
@@ -70,15 +63,14 @@ public class UrlService {
             shortCode = request.customAlias();
 
         } else {
-            // Auto generate from Snowflake ID
-            // Snowflake → 64-bit long → Base62 → 7 chars
+
             long snowflakeId = snowflakeIdGenerator.nextId();
             shortCode = base62Encoder.encode(snowflakeId);
             log.debug("Generated shortCode={} from id={}",
                 shortCode, snowflakeId);
         }
 
-        // ── Step 2: Calculate expiry date ─────────────────────────
+
         LocalDateTime expiresAt = null;
         int expiryDays = (request.expiryDays() != null)
             ? request.expiryDays()
@@ -88,10 +80,7 @@ public class UrlService {
             expiresAt = LocalDateTime.now()
                 .plusDays(expiryDays);
         }
-        // expiryDays == 0 means never expires
-        // expiresAt stays null
 
-        // ── Step 3: Build and save entity ─────────────────────────
         long entityId = snowflakeIdGenerator.nextId();
 
         UrlMapping mapping = UrlMapping.builder()
@@ -109,19 +98,12 @@ public class UrlService {
         log.info("Saved shortCode={} → {}",
             shortCode, request.originalUrl());
 
-        // ── Step 4: Return response DTO ───────────────────────────
+
         return ShortenResponse.from(saved, baseUrl);
     }
 
 
-    // ════════════════════════════════════════════════════════════════
-    //  RESOLVE — Find original URL from short code
-    // ════════════════════════════════════════════════════════════════
 
-    // @Cacheable checks Redis before running method body
-    // Cache HIT  → returns from Redis immediately
-    // Cache MISS → runs method, stores result in Redis
-    // key = "urls::aB3xZ9k"
 @Cacheable(
     value = RedisConfig.CACHE_URLS,
     key = "#shortCode",
@@ -149,12 +131,6 @@ public UrlMapping resolveUrl(String shortCode) {
 }
 
 
-    // ════════════════════════════════════════════════════════════════
-    //  RECORD CLICK — Increment counter after redirect
-    // ════════════════════════════════════════════════════════════════
-
-    // @CacheEvict removes stale cached entry after update
-    // Next resolveUrl() call re-fetches fresh data from DB
     @Transactional
     public void recordClick(String shortCode) {
         try {
@@ -168,9 +144,7 @@ public UrlMapping resolveUrl(String shortCode) {
     }
 
 
-    // ════════════════════════════════════════════════════════════════
-    //  GET INFO — Get metadata without redirecting
-    // ════════════════════════════════════════════════════════════════
+
 
     @Transactional(readOnly = true)
     public ShortenResponse getUrlInfo(String shortCode) {
@@ -179,9 +153,6 @@ public UrlMapping resolveUrl(String shortCode) {
     }
 
 
-    // ════════════════════════════════════════════════════════════════
-    //  DEACTIVATE — Soft delete a short URL
-    // ════════════════════════════════════════════════════════════════
 
     @Transactional
     @CacheEvict(
@@ -201,9 +172,7 @@ public UrlMapping resolveUrl(String shortCode) {
     }
 
 
-    // ════════════════════════════════════════════════════════════════
-    //  LIST — Get all URLs by user
-    // ════════════════════════════════════════════════════════════════
+
 
     @Transactional(readOnly = true)
     public List<ShortenResponse> getUrlsByUser(
@@ -216,21 +185,13 @@ public UrlMapping resolveUrl(String shortCode) {
     }
 
 
-    // ════════════════════════════════════════════════════════════════
-    //  SCHEDULED CLEANUP — Runs every hour automatically
-    // ════════════════════════════════════════════════════════════════
 
-    // cron = "0 0 * * * *" means:
-    // second=0, minute=0, every hour, every day
-    // Runs at 1:00, 2:00, 3:00... automatically
-    // No HTTP call needed — Spring triggers it internally
     @Scheduled(cron = "0 0 * * * *")
     @Transactional
     public void cleanupExpiredUrls() {
         log.info("Running expired URL cleanup...");
 
-        // ONE bulk UPDATE — not a loop
-        // Handles thousands of expired URLs in one statement
+
         int count = repository.deactivateExpiredUrls(
             LocalDateTime.now());
 
@@ -240,9 +201,7 @@ public UrlMapping resolveUrl(String shortCode) {
     }
 
 
-    // ════════════════════════════════════════════════════════════════
-    //  STATS — Platform statistics
-    // ════════════════════════════════════════════════════════════════
+
 
     @Transactional(readOnly = true)
     public Map<String, Object> getStats() {

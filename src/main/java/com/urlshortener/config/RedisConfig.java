@@ -27,9 +27,7 @@ public class RedisConfig {
     public static final String CACHE_STATS      = "url-stats";
     public static final String CACHE_ACTIVE_URL = "active-url";
 
-    // ── Build ObjectMapper for Redis ──────────────────────────────
-    // NOT a @Bean — avoids conflicting with Spring Boot's
-    // auto-configured ObjectMapper used by MVC
+
     private ObjectMapper buildRedisObjectMapper() {
         ObjectMapper mapper = new ObjectMapper();
         mapper.setVisibility(
@@ -44,7 +42,6 @@ public class RedisConfig {
         return mapper;
     }
 
-    // ── Default cache configuration ───────────────────────────────
     private RedisCacheConfiguration defaultCacheConfig() {
         return RedisCacheConfiguration.defaultCacheConfig()
             .entryTtl(Duration.ofHours(24))
@@ -58,9 +55,6 @@ public class RedisConfig {
                         buildRedisObjectMapper())));
     }
 
-    // ── CacheManager ──────────────────────────────────────────────
-    // Single bean — Spring Boot 4 compatible
-    // No RedisCacheManagerBuilderCustomizer needed
     @Bean
     public RedisCacheManager cacheManager(
             RedisConnectionFactory connectionFactory) {

@@ -32,15 +32,7 @@ public class UrlController {
 
     private final UrlService urlService;
 
-    // ════════════════════════════════════════════════════════════════
-    //  POST /api/v1/urls — Create a new short URL
-    // ════════════════════════════════════════════════════════════════
 
-    // @Valid triggers Bean Validation on ShortenRequest
-    // If any @NotBlank @Pattern @Size fails →
-    // Spring throws MethodArgumentNotValidException →
-    // GlobalExceptionHandler catches it → 422 response
-    // Controller never sees invalid data
     @Operation(
         summary = "Create a short URL",
         description = "Accepts a long URL and returns " +
@@ -76,12 +68,6 @@ public class UrlController {
     }
 
 
-    // ════════════════════════════════════════════════════════════════
-    //  GET /r/{shortCode} — THE REDIRECT ENDPOINT
-    //  Most called endpoint in the entire system
-    //  Must be as fast as possible
-    //  Served from Redis cache in < 1ms
-    // ════════════════════════════════════════════════════════════════
 
     @Operation(
         summary = "Redirect to original URL",
@@ -105,8 +91,6 @@ public ResponseEntity<Void> redirect(
 
     log.debug("GET /r/{}", shortCode);
 
-    // Call findLongUrlByShortCode through the injected
-    // service proxy so @Cacheable is triggered correctly
     String longUrl =
         urlService.findLongUrlByShortCode(shortCode);
 
@@ -124,12 +108,6 @@ public ResponseEntity<Void> redirect(
 }
 
 
-    // ════════════════════════════════════════════════════════════════
-    //  GET /api/v1/urls/{shortCode} — Get metadata
-    //  Returns info WITHOUT redirecting
-    //  Used by dashboards and link preview cards
-    // ════════════════════════════════════════════════════════════════
-
     @Operation(
         summary = "Get URL metadata",
         description = "Returns info about a short URL " +
@@ -146,9 +124,6 @@ public ResponseEntity<Void> redirect(
     }
 
 
-    // ════════════════════════════════════════════════════════════════
-    //  GET /api/v1/urls/user/{username} — List user URLs
-    // ════════════════════════════════════════════════════════════════
 
     @Operation(
         summary = "List URLs by user",
@@ -166,9 +141,7 @@ public ResponseEntity<Void> redirect(
     }
 
 
-    // ════════════════════════════════════════════════════════════════
-    //  DELETE /api/v1/urls/{shortCode} — Deactivate a URL
-    // ════════════════════════════════════════════════════════════════
+
 
     @Operation(
         summary = "Deactivate a short URL",
@@ -196,9 +169,7 @@ public ResponseEntity<Void> redirect(
     }
 
 
-    // ════════════════════════════════════════════════════════════════
-    //  GET /api/v1/stats — Platform statistics
-    // ════════════════════════════════════════════════════════════════
+
 
     @Operation(
         summary = "Get platform statistics",
@@ -211,9 +182,7 @@ public ResponseEntity<Void> redirect(
     }
 
 
-    // ════════════════════════════════════════════════════════════════
-    //  GET /api/v1/health — Simple liveness check
-    // ════════════════════════════════════════════════════════════════
+
 
     @GetMapping("/api/v1/health")
     public ResponseEntity<Map<String, String>> health() {

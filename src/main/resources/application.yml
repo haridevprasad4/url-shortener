@@ -2,28 +2,22 @@ spring:
   application:
     name: url-shortener
 
-  # ── DATABASE ──────────────────────────────────
-  # H2 is an in-memory database
-  # It lives inside your app while it runs
-  # When you stop the app all data is gone
-  # Perfect for learning and local development
+
   datasource:
     url: jdbc:h2:mem:urlshortener;DB_CLOSE_DELAY=-1
     driver-class-name: org.h2.Driver
-    username: sp
+    username: sa
     password: ""
 
-  # H2 has a browser console to see your data
-  # Visit: http://localhost:8080/h2-console
+
   h2:
     console:
       enabled: true
       path: /h2-console
 
-  # ── JPA / HIBERNATE ───────────────────────────
+
   jpa:
-    # update = create tables automatically from your Entity classes
-    # You never write CREATE TABLE SQL yourself
+
     hibernate:
       ddl-auto: update
     show-sql: true
@@ -32,7 +26,6 @@ spring:
         format_sql: true
         dialect: org.hibernate.dialect.H2Dialect
 
-  # ── REDIS ─────────────────────────────────────
   data:
     redis:
       host: localhost
@@ -45,8 +38,6 @@ spring:
           min-idle: 1
           max-wait: 1000ms
 
-  # ── CACHE ─────────────────────────────────────
-  # Tell Spring to use Redis as the cache backend
   cache:
     type: redis
     redis:
@@ -54,13 +45,10 @@ spring:
       # 86400000 milliseconds = 24 hours
       time-to-live: 86400000
 
-# ── SERVER ────────────────────────────────────────
 server:
   port: 8080
 
-# ── ACTUATOR ──────────────────────────────────────
-# Monitoring endpoints
-# Visit: http://localhost:8080/actuator/health
+
 management:
   endpoints:
     web:
@@ -70,33 +58,21 @@ management:
     health:
       show-details: always
 
-# ── SNOWFLAKE ─────────────────────────────────────
-# These values tell the Snowflake generator
-# which datacenter and machine this app is on
-# Change machine-id for every new server you deploy
+
 snowflake:
   datacenter-id: 1
   machine-id: 1
 
-# ── APP SETTINGS ──────────────────────────────────
 app:
   base-url: http://localhost:8080
   default-expiry-days: 30
 
-# ── SWAGGER ───────────────────────────────────────
-# API documentation UI
-# Visit: http://localhost:8080/swagger-ui.html
 springdoc:
   api-docs:
     path: /api-docs
   swagger-ui:
     path: /swagger-ui.html
 
-    #Prod ([default profile]     ← everything you already have
-#                      ← uses H2 + localhost Redis
-#---
-#[prod profile]        ← what we just added
-#                      ← uses PostgreSQL + Docker Redis)
 ---
 spring:
   config:
@@ -146,8 +122,3 @@ springdoc:
     path: /api-docs
   swagger-ui:
     path: /swagger-ui.html
-
-logging:
-  level:
-    org.springframework.cache: TRACE
-    org.springframework.data.redis.cache: DEBUG

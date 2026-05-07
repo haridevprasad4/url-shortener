@@ -20,8 +20,7 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    // ── 404 Not Found ─────────────────────────────────────────────
-    // Short code does not exist in the database
+
     @ExceptionHandler(UrlNotFoundException.class)
     public ResponseEntity<ProblemDetail> handleUrlNotFound(
             UrlNotFoundException ex,
@@ -46,8 +45,7 @@ public class GlobalExceptionHandler {
             .body(problem);
     }
 
-    // ── 410 Gone (expired) ────────────────────────────────────────
-    // Short URL existed but passed its expiry date
+
     @ExceptionHandler(UrlExpiredException.class)
     public ResponseEntity<ProblemDetail> handleUrlExpired(
             UrlExpiredException ex,
@@ -71,8 +69,6 @@ public class GlobalExceptionHandler {
             .body(problem);
     }
 
-    // ── 410 Gone (deactivated) ────────────────────────────────────
-    // Short URL exists but was manually deactivated
     @ExceptionHandler(UrlInactiveException.class)
     public ResponseEntity<ProblemDetail> handleUrlInactive(
             UrlInactiveException ex,
@@ -97,8 +93,7 @@ public class GlobalExceptionHandler {
             .body(problem);
     }
 
-    // ── 409 Conflict ──────────────────────────────────────────────
-    // Custom alias is already taken
+
     @ExceptionHandler(AliasAlreadyExistsException.class)
     public ResponseEntity<ProblemDetail> handleAliasConflict(
             AliasAlreadyExistsException ex,
@@ -123,18 +118,14 @@ public class GlobalExceptionHandler {
             .body(problem);
     }
 
-    // ── 422 Unprocessable Entity ──────────────────────────────────
-    // Bean Validation failed on request body
-    // Returns field-level errors so frontend knows exactly
-    // which field is wrong and why
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, Object>>
             handleValidationErrors(
                     MethodArgumentNotValidException ex,
                     WebRequest request) {
 
-        // Collect all field errors into a map
-        // fieldName → error message
+
         Map<String, String> fieldErrors = ex
             .getBindingResult()
             .getAllErrors()
@@ -167,16 +158,12 @@ public class GlobalExceptionHandler {
             .body(body);
     }
 
-    // ── 500 Internal Server Error ─────────────────────────────────
-    // Catch-all for anything we did not anticipate
-    // Log full stack trace for engineers
-    // Return vague message to client — never leak internals
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ProblemDetail> handleGenericError(
             Exception ex,
             WebRequest request) {
 
-        // ERROR level — should alert on-call engineer
         log.error("Unhandled exception: {}",
             ex.getMessage(), ex);
 
@@ -190,9 +177,7 @@ public class GlobalExceptionHandler {
         problem.setProperty(
             "timestamp", LocalDateTime.now().toString());
 
-        // DO NOT include ex.getMessage() here
-        // It could expose database details, table names,
-        // internal paths — security risk
+
 
         return ResponseEntity
             .internalServerError()

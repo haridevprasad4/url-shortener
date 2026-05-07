@@ -2,7 +2,7 @@
 #  STAGE 1 — BUILDER
 # ══════════════════════════════════════════════════════════════
 
-FROM eclipse-temurin:21-jdk-alpine AS builder
+FROM amazoncorretto:21-alpine AS builder
 
 WORKDIR /app
 
@@ -25,7 +25,7 @@ RUN mvn package -DskipTests -B
 #  STAGE 2 — RUNNER
 # ══════════════════════════════════════════════════════════════
 
-FROM eclipse-temurin:21-jre-alpine AS runner
+FROM amazoncorretto:21-alpine AS runner
 
 WORKDIR /app
 
